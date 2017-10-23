@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Compiler</title>
+
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+<meta name="author" content="Hello" />
+<meta name="robots" content="all" />
+<meta name="MSSmartTagsPreventParsing" content="true" />
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<style type="text/css" >
+	@import "css/info.css";
+	@import "css/main.css";
+	@import "css/Editor.css";
+	
+</style>
+<style>
+
+body {
+   background-color: #ffa64d;
+	background-repeat: no-repeat;
+	 background-attachment: scroll;
+	 background-size: cover;
+}	
+	
+.container {
+    overflow: hidden;
+    background-color: #333;
+    font-family: Arial;
+}
+
+.container a {
+    float: left;
+    font-size: 18px;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.dropdown {
+    float: left;
+    overflow: hidden;
+}
+
+.dropdown .dropbtn {
+    font-size: 16px;    
+    border: none;
+    outline: none;
+    color: white;
+    padding: 14px 16px;
+    background-color: inherit;
+}
+
+.container a:hover, .dropdown:hover .dropbtn {
+    background-color: red;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    float: none;
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.styled-select {
+   width: 100px;
+   height: 17px;
+   overflow: hidden;
+   border: 2px double red;
+   display: inline-block;
+   position:relative;
+   }
+
+.styled-select select {
+   background: transparent;
+   width: 100px;
+   font-size:14px;
+   border: 0;
+   height: 17px;
+   position: absolute;
+   left: 0;
+   top: 0;
+   }
+   
+   .fieldset-auto-width {
+		width: 400px;
+		height: 200px;
+		overflow: hidden;
+		border: 2px double red;
+        display: inline-block;
+		display: block;
+		margin-left: 2px;
+		margin-right: 2px;
+		padding-top: 0.35em;
+		padding-bottom: 0.625em;
+		padding-left: 0.75em;
+		padding-right: 0.75em;
+		border: 2px groove (internal value);
+		
+    }
+	
+	.defined-auto-width{
+	
+	    width: 400px;
+		height: 200px;
+		overflow: hidden;
+		border: 2px double red;
+        display: inline-block;
+		display: block;
+		margin-left: 2px;
+		margin-right: 2px;
+		padding-top: 0.35em;
+		padding-bottom: 0.625em;
+		padding-left: 0.75em;
+		padding-right: 0.75em;
+		border: 2px groove (internal value);
+		
+		
+	}
+	 
+
+</style>
+
+</head>
+
+<body>
+
+<?php
+session_start();
+$var_value = $_SESSION['varname'];
+$test='';
+
+
+if(isset($_POST['run']))
+{
+	//$option=$_POST['selectedoption'];
+		$data=$_POST['noise'];
+		$my_file = 'test.txt';
+		//echo "$data";
+		//echo "$my_file";
+		file_put_contents($my_file, $data);
+		//$file = fopen("error.txt","r");
+		$filecontents = file_get_contents('test.txt');
+
+                $words = preg_split('/[\s<>]+/', $filecontents, -1, PREG_SPLIT_NO_EMPTY);
+		
+		//for($i=0;$i<sizeof($words);$i++)
+               //echo ($words[$i]);		
+
+		//while (! feof ($file))
+		for($i=0;$i<sizeof($words);$i++)
+		  {
+			  if((($words[$i])=="printf") || (($words[$i])=="scanf") || (($words[$i])=="stdio.h")){
+				$option='c';
+				break;
+	
+			  }else
+				if((($words[$i])=="cin") || (($words[$i])=="cout") || (($words[$i])=="namespace") || (($words[$i])=="iostream")){
+					$option='c++';
+					break;	
+			}else
+				if((($words[$i])=="import") || (($words[$i])=="public") ||  (($words[$i])=="println")){
+				$option='java';
+				break;
+				}
+			else
+				if((($words[$i])=="#") && (($words[$i+1])!="include")){
+				$option='python';
+				break;
+				}
+			
+				
+		  }
+	//fclose($file);
+	
+
+
+	if($option=='c')
+	    {
+
+		
+		//$data=$_POST['noise'];
+		//echo "$data";
+		$my_file = 'code.c';
+		file_put_contents($my_file, $data);
+		//echo "$my_file";
+		
+		 
+		$output=shell_exec("gcc {$my_file} 2>&1");
+		 //echo "$output";
+		//$error = file_get_contents("error.txt");
+
+		if($output==''){
+			//$val=$args[0]=5;
+			$test=exec("./a.out",$out,$return_var);
+			//echo "$return_var";
+		}
+		else
+			$test=$output;
+	     }
+	      else
+		if($option=='c++')
+			{
+				//echo "hiii";
+				//$data=$_POST['noise'];
+				$my_file = 'code.cpp';
+				file_put_contents($my_file, $data);
+				 
+				$output=shell_exec("g++ {$my_file} 2>&1");
+
+				 //$check= file_get_contents("code.c");
+				 //echo "$check";
+				//$output=system("sh -c 'gcc $my_file 2>&1'");
+
+				
+
+				if($output==''){
+				$test=exec("./a.out",$out,$return_var);
+				
+				}
+				else
+					$test=$output;
+
+			
+			}
+
+		else
+		    if($option=='java')
+			  {
+		
+		
+					//$data=$_POST['noise'];
+					$my_file = 'code.java';
+					file_put_contents($my_file, $data);
+
+					$output=shell_exec("javac {$my_file} 2>&1");
+
+						if($output==''){
+						$test = shell_exec("java myClass 2>&1");
+						}else{
+							$test=$output;
+						}
+	
+				
+
+			
+			}
+		else
+		    if($option=='python')
+			{
+				//$data=$_POST['noise'];
+				$my_file='code.py';
+				file_put_contents($my_file, $data);
+
+				$test=shell_exec("python {$my_file} 2>&1");
+				
+
+			
+			}
+
+		else
+		    {
+			echo '<script language="javascript">';
+			echo 'alert("Unsupported Language")';
+			echo '</script>';
+		    }
+
+
+
+}
+		
+?>
+
+
+<script type="text/javascript">
+function cleartextfield() {
+    document.getElementById('noise').value = "";
+}
+
+
+/****************************************************************************************
+
+
+function selectedlang() {
+    var x = document.getElementById('myselect').value;
+	
+	if(x=="c")
+    document.getElementById('noise').value = "#include<stdio.h>\n"+"int main()"+"\n{\n\n"+"//your code goes here"+"\nreturn 0;"+"\n}";
+	else
+	if(x=="c++")
+	 document.getElementById('noise').value = "#include<iostream>\n"+"using namespace std;\n"+"\nint main()"+"\n{\n\n"+"//your code goes here"+"\nreturn 0;"+"\n}";
+	else
+	if(x=="java")
+	{
+	document.getElementById('noise').value = "import java.util.*;"+"\nimport java.lang.*;"+"\nimport java.io.*;\n\n"+
+	"// Name of the class has to be Main only if the class is public.\n\n"+
+	"class myClass\n"+"{\n"+"   "+
+	"public static void main (String[] args) throws java.lang.Exception\n"+"        "+
+	"{\n\n"+"              "+"        "+"}\n"+"}\n";
+	}
+	else
+	if(x=="python")
+	document.getElementById('noise').value ="#your python code goes here";
+	else
+	 document.getElementById('noise').value = "";
+	
+}
+/*
+ function filesave() {
+  var text = document.getElementById('noise').value;
+  var filename = document.getElementById('input-fileName').value;
+  var blob = new Blob([text], {type: "text/plain;charset=utf-8"});
+  saveAs(blob, filename+".txt");
+}
+
+
+function compile(){
+document.getElementById('outputfield').value="Compilation Error";
+}
+/*
+function changelabel(){
+var name="<?php echo "$var_value" ?>";
+document.getElementById('label1').innerHTML=name;
+}
+
+--->>>>>>>Select option for languages
+		<div class="styled-select">
+				<select name="selectedoption" id="myselect" onchange="selectedlang()">
+					<option value="select">select language</option>
+					<option value="c">C</option>
+					<option value="c++">C++</option>
+					<option value="java">Java</option>
+					<option value="python">Python</option>
+				</select>
+				</div>
+
+
+****************************************************************************************/
+
+</script>
+
+<div class="container">
+  <i class="material-icons" style="font-size:48px;color:red;float:left">home</i>
+  <a href="compiler.html">Home</a>
+
+  <div class="dropdown">
+  
+    <button class="dropbtn" onclick="">Supported languages</button>
+    <div class="dropdown-content">
+      <a href="#">C</a>
+      <a href="#">C++</a>
+      <a href="#">Java</a>
+	  <a href="#">Python</a>	
+    </div>
+  </div> 
+  <a href="register.php">Register</a>
+  <i class="material-icons" style="font-size:48px;color:red;position: absolute;left:400px;padding-left:0.5em">clear_all</i>
+  <a href="javascript:cleartextfield()" style="padding-left:3.0em">Clear field</a>
+
+  <i class="material-icons" style="font-size:48px;color:red;float:right">account_circle</i>
+   <a href="login.php" onclick="changelabel()">Login</a>
+   <label for="user" class="sr-only" id="label1" style="font-size: 18px;color: white;position:absolute;padding-left:27.0em;padding-top:1.0em"><?php echo "$var_value"?></label>
+   
+</div>
+
+	<div id="content">
+		
+		<form  method="POST" ">
+			<fieldset>
+			<textarea name="noise" style="width:1250px;height:300px" spellcheck="false" id="noise"  class="textareadimension">Your code goes here</textarea>
+			</fieldset>
+			<fieldset class="submit">
+				
+				<input type="submit" value="Compile and Run" name="run" />
+				<!--
+				<input type="submit" value="Compile" name="compile" />
+				<input type="text" class="form-control" id="input-fileName" value="textFile" placeholder="Enter file name">
+				<button id="btn-save" type="submit" class="btn btn-primary">Save to file</button>	
+				-->
+			</fieldset>
+		</form>
+	</div>
+
+		<form method="TEST">
+		<div style="float:left;">
+		<fieldset class="fieldset-auto-width">
+		<legend><h3>Custom Input</h3></legend>
+		<textarea id="inputfield" rows="11" cols="47" style="position:absolute;bottom:35px;left:20px;right:2px;width:400px;height:150px">
+		</textarea>
+		</fieldset>
+		</div>
+		</form>
+		
+		<form method="FEST">
+		<div style="float:right">
+		<fieldset class="defined-auto-width">
+		<legend><h3>Output</h3></legend>
+		<textarea id="outputfield" name="outputfield" rows="11" cols="47" style="position:absolute;bottom:35px;left:880px;right:2px;width:400px;height:150px"><?php echo $test; ?>
+		</textarea>
+		</fieldset>
+		</div>
+		</form>
+</body>
+</html>
